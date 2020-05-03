@@ -37,7 +37,7 @@ public class EmployeeRepositoryTest {
         EmployeeEntity userEntity = new EmployeeEntity(id, name, dob,employeeNumber );
         PhoneEntity phone = new PhoneEntity(userEntity, 99989898L);
         userEntity.addPhone(phone);
-        UserEntity savedUser = this.repository.save(userEntity);
+        UserEntity savedUser = (UserEntity) this.repository.save(userEntity);
         assertThat(savedUser.getId()).isNotNull();
     }
 
@@ -52,7 +52,7 @@ public class EmployeeRepositoryTest {
         EmployeeEntity userEntity = new EmployeeEntity(id, name, dob,employeeNumber );
         PhoneEntity phone = new PhoneEntity(userEntity, 99989898L);
         userEntity.addPhone(phone);
-        UserEntity savedUser = this.repository.save(userEntity);
+        UserEntity savedUser = (UserEntity) this.repository.save(userEntity);
 
         Optional<UserEntity> optionalUserEntity = repository.findById(savedUser.getId());
         assertTrue(optionalUserEntity.isPresent());
@@ -68,7 +68,7 @@ public class EmployeeRepositoryTest {
         EmployeeEntity userEntity = new EmployeeEntity(id, name, dob,employeeNumber );
         PhoneEntity phone = new PhoneEntity(userEntity, 99989898L);
         userEntity.addPhone(phone);
-        UserEntity savedUser = this.repository.save(userEntity);
+        UserEntity savedUser = (UserEntity) this.repository.save(userEntity);
         repository.remove(savedUser.getId());
     }
 

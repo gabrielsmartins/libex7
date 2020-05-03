@@ -4,21 +4,21 @@ import br.edu.utfpr.libex7.adapters.persistence.entity.authors.AuthorEntity;
 import br.edu.utfpr.libex7.adapters.persistence.mapper.AbstractMapper;
 import br.edu.utfpr.libex7.application.domain.authors.Author;
 
-<span class="fc" id="L7">public class AuthorPersistenceMapper implements AbstractMapper&lt;Author, AuthorEntity&gt; {</span>
+<span class="nc" id="L7">public class AuthorPersistenceMapper implements AbstractMapper&lt;Author, AuthorEntity&gt; {</span>
 
 
     @Override
     public Author mapToDomain(AuthorEntity authorEntity) {
-<span class="fc" id="L12">        Long id = authorEntity.getId();</span>
-<span class="fc" id="L13">        String name = authorEntity.getName();</span>
-<span class="fc" id="L14">        return new Author(id,name);</span>
+<span class="nc" id="L12">        Long id = authorEntity.getId();</span>
+<span class="nc" id="L13">        String name = authorEntity.getName();</span>
+<span class="nc" id="L14">        return new Author(id,name);</span>
     }
 
     @Override
     public AuthorEntity mapToEntity(Author author) {
-<span class="fc" id="L19">        Long id = author.getId();</span>
-<span class="fc" id="L20">        String name = author.getName();</span>
-<span class="fc" id="L21">        return new AuthorEntity(id, name);</span>
+<span class="nc" id="L19">        Long id = author.getId();</span>
+<span class="nc" id="L20">        String name = author.getName();</span>
+<span class="nc" id="L21">        return new AuthorEntity(id, name);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

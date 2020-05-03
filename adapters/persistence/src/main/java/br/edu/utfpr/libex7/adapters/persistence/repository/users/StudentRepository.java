@@ -2,8 +2,11 @@ package br.edu.utfpr.libex7.adapters.persistence.repository.users;
 
 import br.edu.utfpr.libex7.adapters.persistence.entity.users.StudentEntity;
 
-import java.sql.*;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class StudentRepository extends UserRepository<StudentEntity> {
 
@@ -11,56 +14,26 @@ public class StudentRepository extends UserRepository<StudentEntity> {
         super(connection);
     }
 
+
     @Override
-    public StudentEntity save(StudentEntity user) {
-        try {
-            super.save(user);
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO ALUNO (CODIGO_USUARIO, REGISTRO_ALUNO) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setLong(1,user.getId());
-            preparedStatement.setLong(2,user.getStudentNumber());
-            preparedStatement.execute();
+    protected StudentEntity parse(ResultSet resultSet) {
+        try{
+            StudentEntity user = super.parse(resultSet);
+            Long studentNumber = resultSet.getLong("REGISTRO_ALUNO");
+            user.setStudentNumber(studentNumber);
             return user;
-        } catch (SQLException e) {
+        }catch (SQLException e){
             e.printStackTrace();
-            throw new RuntimeException("Erro ao inserir aluno",e);
+            throw new RuntimeException("Erro ao carregar informacoes de funcionario",e);
         }
     }
 
     @Override
-    public Optional<StudentEntity> findById(Long id) {
-        try {
-            Optional<StudentEntity> optionalUser = super.findById(id);
-            if(!optionalUser.isPresent()){
-                return Optional.empty();
-            }
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM ALUNO WHERE CODIGO_USUARIO = ?");
-            preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            StudentEntity user = optionalUser.get();
-            if(resultSet.next()){
-                Long studentNumber = resultSet.getLong("REGISTRO_ALUNO");
-                user.setStudentNumber(studentNumber);
-                return Optional.ofNullable(user);
-            }
-            return Optional.empty();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao consultar aluno",e);
-        }
-    }
-
-    @Override
-    public void remove(Long id) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM ALUNO WHERE CODIGO_USUARIO = ?");
-            preparedStatement.setLong(1, id);
-            preparedStatement.execute();
-            super.remove(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao remove aluno",e);
-        }
+    protected Map<String, Object> getColumnMap(StudentEntity studentEntity) {
+        Map<String, Object> columMap = new LinkedHashMap<>();
+        columMap.put("CODIGO_USUARIO", studentEntity.getId());
+        columMap.put("REGISTRO_ALUNO", studentEntity.getStudentNumber());
+        return columMap;
     }
 
     @Override

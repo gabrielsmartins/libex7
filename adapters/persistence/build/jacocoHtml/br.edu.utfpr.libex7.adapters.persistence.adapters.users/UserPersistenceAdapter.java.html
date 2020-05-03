@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-<span class="fc" id="L16">@RequiredArgsConstructor</span>
+<span class="nc" id="L16">@RequiredArgsConstructor</span>
 public class UserPersistenceAdapter implements SaveUserPort, SearchUserPort, RemoveUserPort {
 
     private final UserPersistenceService service;
@@ -21,32 +21,32 @@ public class UserPersistenceAdapter implements SaveUserPort, SearchUserPort, Rem
 
     @Override
     public User save(User user) {
-<span class="fc" id="L24">        UserEntity userEntity = mapper.mapToEntity(user);</span>
-<span class="fc" id="L25">        service.save(userEntity);</span>
-<span class="fc" id="L26">        return mapper.mapToDomain(userEntity);</span>
+<span class="nc" id="L24">        UserEntity userEntity = mapper.mapToEntity(user);</span>
+<span class="nc" id="L25">        service.save(userEntity);</span>
+<span class="nc" id="L26">        return mapper.mapToDomain(userEntity);</span>
     }
 
     @Override
     public void remove(Long id) {
-<span class="fc" id="L31">        service.remove(id);</span>
-<span class="fc" id="L32">    }</span>
+<span class="nc" id="L31">        service.remove(id);</span>
+<span class="nc" id="L32">    }</span>
 
     @Override
     public Optional&lt;User&gt; findById(Long id) {
-<span class="fc" id="L36">        Optional&lt;UserEntity&gt; optionalUserEntity = service.findById(id);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(optionalUserEntity.isPresent()){</span>
-<span class="fc" id="L38">            UserEntity userEntity = optionalUserEntity.get();</span>
-<span class="fc" id="L39">            return Optional.ofNullable(mapper.mapToDomain(userEntity));</span>
+<span class="nc" id="L36">        Optional&lt;UserEntity&gt; optionalUserEntity = service.findById(id);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if(optionalUserEntity.isPresent()){</span>
+<span class="nc" id="L38">            UserEntity userEntity = optionalUserEntity.get();</span>
+<span class="nc" id="L39">            return Optional.ofNullable(mapper.mapToDomain(userEntity));</span>
         }
-<span class="fc" id="L41">        return Optional.empty();</span>
+<span class="nc" id="L41">        return Optional.empty();</span>
     }
 
     @Override
     public List&lt;User&gt; findAll() {
-<span class="fc" id="L46">        List&lt;UserEntity&gt; userEntities = service.findAll();</span>
-<span class="fc" id="L47">        List&lt;User&gt; users = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L48">        userEntities.forEach(u -&gt; users.add(mapper.mapToDomain(u)));</span>
-<span class="fc" id="L49">        return users;</span>
+<span class="nc" id="L46">        List&lt;UserEntity&gt; userEntities = service.findAll();</span>
+<span class="nc" id="L47">        List&lt;User&gt; users = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L48">        userEntities.forEach(u -&gt; users.add(mapper.mapToDomain(u)));</span>
+<span class="nc" id="L49">        return users;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

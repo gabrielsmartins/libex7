@@ -2,70 +2,47 @@
 
 import br.edu.utfpr.libex7.adapters.persistence.entity.users.EmployeeEntity;
 
-import java.sql.*;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class EmployeeRepository extends UserRepository&lt;EmployeeEntity&gt; {
 
     public EmployeeRepository(Connection connection) {
-<span class="fc" id="L11">        super(connection);</span>
-<span class="fc" id="L12">    }</span>
+<span class="fc" id="L14">        super(connection);</span>
+<span class="fc" id="L15">    }</span>
 
     @Override
-    public EmployeeEntity save(EmployeeEntity user) {
-        try {
-<span class="fc" id="L17">            super.save(user);</span>
-<span class="fc" id="L18">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;INSERT INTO SERVIDOR (CODIGO_USUARIO, MATRICULA_SERVIDOR) values (?, ?)&quot;, Statement.RETURN_GENERATED_KEYS);</span>
-<span class="fc" id="L19">            preparedStatement.setLong(1,user.getId());</span>
-<span class="fc" id="L20">            preparedStatement.setLong(2,user.getEmployeeNumber());</span>
-<span class="fc" id="L21">            preparedStatement.execute();</span>
-<span class="fc" id="L22">            return user;</span>
-<span class="nc" id="L23">        } catch (SQLException e) {</span>
-<span class="nc" id="L24">            e.printStackTrace();</span>
-<span class="nc" id="L25">            throw new RuntimeException(&quot;Erro ao inserir usuario&quot;,e);</span>
+    public EmployeeEntity save(EmployeeEntity entity) {
+<span class="nc" id="L19">        return super.save(entity);</span>
+    }
+
+    @Override
+    protected EmployeeEntity parse(ResultSet resultSet) {
+        try{
+<span class="nc" id="L25">            EmployeeEntity user = super.parse(resultSet);</span>
+<span class="nc" id="L26">            Long employeeNumber = resultSet.getLong(&quot;MATRICULA_SERVIDOR&quot;);</span>
+<span class="nc" id="L27">            user.setEmployeeNumber(employeeNumber);</span>
+<span class="nc" id="L28">            return user;</span>
+<span class="nc" id="L29">        }catch (SQLException e){</span>
+<span class="nc" id="L30">            e.printStackTrace();</span>
+<span class="nc" id="L31">            throw new RuntimeException(&quot;Erro ao carregar informacoes de funcionario&quot;,e);</span>
         }
     }
 
     @Override
-    public Optional&lt;EmployeeEntity&gt; findById(Long id) {
-        try {
-<span class="fc" id="L32">            Optional&lt;EmployeeEntity&gt; optionalUser = super.findById(id);</span>
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">            if(!optionalUser.isPresent()){</span>
-<span class="nc" id="L34">                return Optional.empty();</span>
-            }
-<span class="fc" id="L36">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM SERVIDOR WHERE CODIGO_USUARIO = ?&quot;);</span>
-<span class="fc" id="L37">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L38">            ResultSet resultSet = preparedStatement.executeQuery();</span>
-
-<span class="fc" id="L40">            EmployeeEntity user = optionalUser.get();</span>
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if(resultSet.next()){</span>
-<span class="fc" id="L42">                Long employeeNumber = resultSet.getLong(&quot;MATRICULA_SERVIDOR&quot;);</span>
-<span class="fc" id="L43">                user.setEmployeeNumber(employeeNumber);</span>
-<span class="fc" id="L44">                return Optional.ofNullable(user);</span>
-            }
-<span class="nc" id="L46">            return Optional.empty();</span>
-<span class="nc" id="L47">        } catch (SQLException e) {</span>
-<span class="nc" id="L48">            e.printStackTrace();</span>
-<span class="nc" id="L49">            throw new RuntimeException(&quot;Erro ao consultar servidor&quot;,e);</span>
-        }
+    protected Map&lt;String, Object&gt; getColumnMap(EmployeeEntity employeeEntity) {
+<span class="fc" id="L37">        Map&lt;String, Object&gt; columMap = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L38">        columMap.put(&quot;CODIGO_USUARIO&quot;, employeeEntity.getId());</span>
+<span class="fc" id="L39">        columMap.put(&quot;MATRICULA_SERVIDOR&quot;, employeeEntity.getEmployeeNumber());</span>
+<span class="fc" id="L40">        return columMap;</span>
     }
-
-    @Override
-    public void remove(Long id) {
-        try {
-<span class="fc" id="L56">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;DELETE FROM SERVIDOR WHERE CODIGO_USUARIO = ?&quot;);</span>
-<span class="fc" id="L57">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L58">            preparedStatement.execute();</span>
-<span class="fc" id="L59">            super.remove(id);</span>
-<span class="nc" id="L60">        } catch (SQLException e) {</span>
-<span class="nc" id="L61">            e.printStackTrace();</span>
-<span class="nc" id="L62">            throw new RuntimeException(&quot;Erro ao remove servidor&quot;,e);</span>
-<span class="fc" id="L63">        }</span>
-<span class="fc" id="L64">    }</span>
 
     @Override
     protected EmployeeEntity newInstance() {
-<span class="fc" id="L68">        return new EmployeeEntity();</span>
+<span class="nc" id="L45">        return new EmployeeEntity();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

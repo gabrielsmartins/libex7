@@ -4,21 +4,21 @@ import br.edu.utfpr.libex7.adapters.persistence.entity.phones.PhoneEntity;
 import br.edu.utfpr.libex7.adapters.persistence.mapper.AbstractMapper;
 import br.edu.utfpr.libex7.application.domain.phones.Phone;
 
-<span class="fc" id="L7">public class PhonePersistenceMapper implements AbstractMapper&lt;Phone, PhoneEntity&gt; {</span>
+<span class="nc" id="L7">public class PhonePersistenceMapper implements AbstractMapper&lt;Phone, PhoneEntity&gt; {</span>
 
 
     @Override
     public Phone mapToDomain(PhoneEntity phoneEntity) {
-<span class="fc" id="L12">        Phone phone = new Phone();</span>
-<span class="fc" id="L13">        phone.setNumber(phoneEntity.getNumber());</span>
-<span class="fc" id="L14">        return phone;</span>
+<span class="nc" id="L12">        Phone phone = new Phone();</span>
+<span class="nc" id="L13">        phone.setNumber(phoneEntity.getNumber());</span>
+<span class="nc" id="L14">        return phone;</span>
     }
 
     @Override
     public PhoneEntity mapToEntity(Phone phone) {
-<span class="fc" id="L19">        PhoneEntity phoneEntity = new PhoneEntity();</span>
-<span class="fc" id="L20">        phoneEntity.setNumber(phone.getNumber());</span>
-<span class="fc" id="L21">        return phoneEntity;</span>
+<span class="nc" id="L19">        PhoneEntity phoneEntity = new PhoneEntity();</span>
+<span class="nc" id="L20">        phoneEntity.setNumber(phone.getNumber());</span>
+<span class="nc" id="L21">        return phoneEntity;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

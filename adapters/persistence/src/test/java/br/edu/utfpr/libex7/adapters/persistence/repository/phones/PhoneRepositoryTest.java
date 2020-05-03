@@ -36,7 +36,7 @@ public class PhoneRepositoryTest {
         LocalDate dob = LocalDate.of(1973, 05, 21);
 
         Long employeeNumber = 1L;
-        EmployeeEntity userEntity = new EmployeeEntity(id, name, dob,employeeNumber );
+        EmployeeEntity userEntity = new EmployeeEntity(id, name, dob,employeeNumber);
         UserEntity savedUser = this.userRepository.save(userEntity);
 
         PhoneEntity phone = new PhoneEntity(savedUser, 12345L);

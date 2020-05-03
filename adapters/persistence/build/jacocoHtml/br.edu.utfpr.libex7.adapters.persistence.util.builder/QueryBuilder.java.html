@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QueryBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">persistence</a> &gt; <a href="index.source.html" class="el_package">br.edu.utfpr.libex7.adapters.persistence.util.builder</a> &gt; <span class="el_source">QueryBuilder.java</span></div><h1>QueryBuilder.java</h1><pre class="source lang-java linenums">package br.edu.utfpr.libex7.adapters.persistence.util.builder;
+
+import java.util.Map;
+
+<span class="fc" id="L5">public class QueryBuilder {</span>
+
+<span class="fc" id="L7">    private StringBuilder query = new StringBuilder();</span>
+    private String table;
+    private QueryType type;
+    private Map&lt;String, Object&gt; columnMap;
+
+    public QueryBuilder forType(QueryType type){
+<span class="fc" id="L13">        this.type = type;</span>
+<span class="fc" id="L14">        return this;</span>
+    }
+
+    public QueryBuilder forTable(String table){
+<span class="fc" id="L18">        this.table = table;</span>
+<span class="fc" id="L19">        return this;</span>
+    }
+
+    public QueryBuilder withColumnMap(Map&lt;String, Object&gt; columnMap){
+<span class="fc" id="L23">        this.columnMap = columnMap;</span>
+<span class="fc" id="L24">        return this;</span>
+    }
+
+    public String build() {
+<span class="fc" id="L28">        query.append(type.command)</span>
+<span class="fc" id="L29">                .append(&quot; &quot; + table + &quot;(&quot;);</span>
+
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if(!columnMap.isEmpty()){</span>
+<span class="fc" id="L32">            query.append(createColumnNames() + &quot;) &quot;)</span>
+<span class="fc" id="L33">                 .append(&quot;VALUES(&quot; + createColumnParameters() + &quot;)&quot;);</span>
+        }
+
+<span class="fc" id="L36">        return this.query.toString();</span>
+    }
+
+    private String createColumnNames(){
+<span class="fc" id="L40">        StringBuilder columnNames = new StringBuilder();</span>
+<span class="fc" id="L41">        columnMap.entrySet()</span>
+<span class="fc" id="L42">                .stream()</span>
+<span class="fc" id="L43">                .forEach(entry -&gt; columnNames.append(entry.getKey()).append(&quot;,&quot;));</span>
+<span class="fc" id="L44">        return columnNames.toString().substring(0,columnNames.toString().length()-1);</span>
+    }
+
+    private String createColumnParameters(){
+<span class="fc" id="L48">        StringBuilder columnParameters = new StringBuilder();</span>
+<span class="fc" id="L49">        columnMap.entrySet()</span>
+<span class="fc" id="L50">                .stream()</span>
+<span class="fc" id="L51">                .forEach(entry -&gt; columnParameters.append(&quot;?&quot;).append(&quot;,&quot;));</span>
+<span class="fc" id="L52">        return columnParameters.toString().substring(0, columnParameters.length()-1);</span>
+    }
+
+
+
+<span class="fc" id="L57">    public enum QueryType{</span>
+<span class="fc" id="L58">        INSERT(&quot;INSERT INTO&quot;),</span>
+<span class="fc" id="L59">        SELECT(&quot;SELECT FROM&quot;),</span>
+<span class="fc" id="L60">        UPDATE(&quot;UPDATE&quot;),</span>
+<span class="fc" id="L61">        DELETE(&quot;DELETE FROM&quot;);</span>
+
+        private String command;
+
+<span class="fc" id="L65">        QueryType(String command){</span>
+<span class="fc" id="L66">            this.command = command;</span>
+<span class="fc" id="L67">        }</span>
+
+        public String getCommand() {
+<span class="nc" id="L70">            return command;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

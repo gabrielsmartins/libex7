@@ -4,10 +4,10 @@ import br.edu.utfpr.libex7.adapters.persistence.entity.phones.PhoneEntity;
 import br.edu.utfpr.libex7.adapters.persistence.repository.GenericRepository;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 public class PhoneRepository extends GenericRepository&lt;PhoneEntity, Long&gt; {
 
@@ -17,88 +17,43 @@ public class PhoneRepository extends GenericRepository&lt;PhoneEntity, Long&gt; 
 <span class="fc" id="L17">    }</span>
 
     @Override
-    public PhoneEntity save(PhoneEntity phoneEntity) {
-        try {
-<span class="fc" id="L22">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;INSERT INTO TELEFONE_USUARIO (CODIGO_USUARIO, NUMERO_TELEFONE) values (?, ?)&quot;, Statement.RETURN_GENERATED_KEYS);</span>
-<span class="fc" id="L23">            preparedStatement.setLong(1,phoneEntity.getUser().getId());</span>
-<span class="fc" id="L24">            preparedStatement.setLong(2,phoneEntity.getNumber());</span>
-<span class="fc" id="L25">            preparedStatement.execute();</span>
-<span class="fc" id="L26">            return phoneEntity;</span>
-<span class="nc" id="L27">        } catch (SQLException e) {</span>
-<span class="nc" id="L28">            e.printStackTrace();</span>
-<span class="nc" id="L29">            throw new RuntimeException(&quot;Erro ao inserir telefone&quot;,e);</span>
+    protected PhoneEntity parse(ResultSet resultSet) {
+        try{
+<span class="nc" id="L22">            PhoneEntity phoneEntity = new PhoneEntity();</span>
+<span class="nc" id="L23">            Long phoneNumber = resultSet.getLong(&quot;NUMERO_TELEFONE&quot;);</span>
+<span class="nc" id="L24">            phoneEntity.setNumber(phoneNumber);</span>
+<span class="nc" id="L25">            return phoneEntity;</span>
+<span class="nc" id="L26">        }catch (SQLException e){</span>
+<span class="nc" id="L27">            e.printStackTrace();</span>
+<span class="nc" id="L28">            throw new RuntimeException(&quot;Erro ao carregar informacoes de telefone&quot;,e);</span>
         }
     }
 
     @Override
-    public Optional&lt;PhoneEntity&gt; findById(Long id) {
-        try {
-<span class="nc" id="L36">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM TELEFONE_USUARIO WHERE CODIGO_TELEFONE = ?&quot;);</span>
-<span class="nc" id="L37">            preparedStatement.setLong(1, id);</span>
-<span class="nc" id="L38">            ResultSet resultSet = preparedStatement.executeQuery();</span>
-
-<span class="nc" id="L40">            PhoneEntity phoneEntity = new PhoneEntity();</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">            if(resultSet.next()){</span>
-<span class="nc" id="L42">                Long phoneNumber = resultSet.getLong(&quot;NUMERO_TELEFONE&quot;);</span>
-<span class="nc" id="L43">                phoneEntity.setNumber(phoneNumber);</span>
-<span class="nc" id="L44">                return Optional.ofNullable(phoneEntity);</span>
-            }
-<span class="nc" id="L46">            return Optional.empty();</span>
-<span class="nc" id="L47">        } catch (SQLException e) {</span>
-<span class="nc" id="L48">            e.printStackTrace();</span>
-<span class="nc" id="L49">            throw new RuntimeException(&quot;Erro ao consultar telefone&quot;,e);</span>
-        }
+    protected Map&lt;String, Object&gt; getColumnMap(PhoneEntity entity) {
+<span class="nc" id="L34">        Map&lt;String, Object&gt; columMap = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L35">        columMap.put(&quot;CODIGO_USUARIO&quot;, entity.getUser().getId());</span>
+<span class="nc" id="L36">        columMap.put(&quot;NUMERO_TELEFONE&quot;, entity.getNumber());</span>
+<span class="nc" id="L37">        return columMap;</span>
     }
-
-    @Override
-    public List&lt;PhoneEntity&gt; findAll() {
-        try {
-<span class="nc" id="L56">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM TELEFONE_USUARIO&quot;);</span>
-<span class="nc" id="L57">            ResultSet resultSet = preparedStatement.executeQuery();</span>
-
-<span class="nc" id="L59">            List&lt;PhoneEntity&gt; phones = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">            while(resultSet.next()){</span>
-<span class="nc" id="L61">                PhoneEntity phoneEntity = new PhoneEntity();</span>
-<span class="nc" id="L62">                Long phoneNumber = resultSet.getLong(&quot;NUMERO_TELEFONE&quot;);</span>
-<span class="nc" id="L63">                phoneEntity.setNumber(phoneNumber);</span>
-<span class="nc" id="L64">                phones.add(phoneEntity);</span>
-<span class="nc" id="L65">            }</span>
-<span class="nc" id="L66">            return phones;</span>
-<span class="nc" id="L67">        } catch (SQLException e) {</span>
-<span class="nc" id="L68">            e.printStackTrace();</span>
-<span class="nc" id="L69">            throw new RuntimeException(&quot;Erro ao consultar telefones&quot;,e);</span>
-        }
-    }
-
-    @Override
-    public void remove(Long id) {
-        try {
-<span class="nc" id="L76">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;DELETE FROM TELEFONE_USUARIO WHERE CODIGO_TELEFONE = ?&quot;);</span>
-<span class="nc" id="L77">            preparedStatement.setLong(1, id);</span>
-<span class="nc" id="L78">            preparedStatement.execute();</span>
-<span class="nc" id="L79">        } catch (SQLException e) {</span>
-<span class="nc" id="L80">            e.printStackTrace();</span>
-<span class="nc" id="L81">            throw new RuntimeException(&quot;Erro ao remover telefone&quot;,e);</span>
-<span class="nc" id="L82">        }</span>
-<span class="nc" id="L83">    }</span>
 
     public List&lt;PhoneEntity&gt; findByUserId(Long id) {
         try {
-<span class="fc" id="L87">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM TELEFONE_USUARIO WHERE CODIGO_USUARIO = ?&quot;);</span>
-<span class="fc" id="L88">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L89">            ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="nc" id="L42">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM TELEFONE_USUARIO WHERE CODIGO_USUARIO = ?&quot;);</span>
+<span class="nc" id="L43">            preparedStatement.setLong(1, id);</span>
+<span class="nc" id="L44">            ResultSet resultSet = preparedStatement.executeQuery();</span>
 
-<span class="fc" id="L91">            List&lt;PhoneEntity&gt; phoneEntities = new LinkedList&lt;&gt;();</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if(resultSet.next()){</span>
-<span class="fc" id="L93">                Long phoneNumber = resultSet.getLong(&quot;NUMERO_TELEFONE&quot;);</span>
-<span class="fc" id="L94">                PhoneEntity phoneEntity = new PhoneEntity();</span>
-<span class="fc" id="L95">                phoneEntity.setNumber(phoneNumber);</span>
-<span class="fc" id="L96">                phoneEntities.add(phoneEntity);</span>
+<span class="nc" id="L46">            List&lt;PhoneEntity&gt; phoneEntities = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if(resultSet.next()){</span>
+<span class="nc" id="L48">                Long phoneNumber = resultSet.getLong(&quot;NUMERO_TELEFONE&quot;);</span>
+<span class="nc" id="L49">                PhoneEntity phoneEntity = new PhoneEntity();</span>
+<span class="nc" id="L50">                phoneEntity.setNumber(phoneNumber);</span>
+<span class="nc" id="L51">                phoneEntities.add(phoneEntity);</span>
             }
-<span class="fc" id="L98">            return phoneEntities;</span>
-<span class="nc" id="L99">        } catch (SQLException e) {</span>
-<span class="nc" id="L100">            e.printStackTrace();</span>
-<span class="nc" id="L101">            throw new RuntimeException(&quot;Erro ao consultar telefones&quot;,e);</span>
+<span class="nc" id="L53">            return phoneEntities;</span>
+<span class="nc" id="L54">        } catch (SQLException e) {</span>
+<span class="nc" id="L55">            e.printStackTrace();</span>
+<span class="nc" id="L56">            throw new RuntimeException(&quot;Erro ao consultar telefones&quot;,e);</span>
         }
     }
 }

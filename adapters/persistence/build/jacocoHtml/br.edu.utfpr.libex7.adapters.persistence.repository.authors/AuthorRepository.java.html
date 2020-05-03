@@ -3,90 +3,43 @@
 import br.edu.utfpr.libex7.adapters.persistence.entity.authors.AuthorEntity;
 import br.edu.utfpr.libex7.adapters.persistence.repository.GenericRepository;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AuthorRepository extends GenericRepository&lt;AuthorEntity, Long&gt; {
 
 
     public AuthorRepository(Connection connection) {
-<span class="fc" id="L15">        super(connection);</span>
-<span class="fc" id="L16">    }</span>
+<span class="nc" id="L16">        super(connection);</span>
+<span class="nc" id="L17">    }</span>
 
     @Override
-    public AuthorEntity save(AuthorEntity authorEntity) {
-        try {
-<span class="fc" id="L21">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;INSERT INTO AUTOR (NOME_AUTOR) values (?)&quot;, Statement.RETURN_GENERATED_KEYS);</span>
-<span class="fc" id="L22">            preparedStatement.setString(1,authorEntity.getName());</span>
-<span class="fc" id="L23">            preparedStatement.execute();</span>
-<span class="fc" id="L24">            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();</span>
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">            if(generatedKeys.next()){</span>
-<span class="fc" id="L26">                Long id = generatedKeys.getLong(&quot;CODIGO_AUTOR&quot;);</span>
-<span class="fc" id="L27">                authorEntity.setId(id);</span>
-            }
-<span class="fc" id="L29">            return authorEntity;</span>
-<span class="nc" id="L30">        } catch (SQLException e) {</span>
-<span class="nc" id="L31">            e.printStackTrace();</span>
-<span class="nc" id="L32">            throw new RuntimeException(&quot;Erro ao inserir autor&quot;,e);</span>
+    protected AuthorEntity parse(ResultSet resultSet) {
+        try{
+<span class="nc" id="L22">            AuthorEntity authorEntity = new AuthorEntity();</span>
+<span class="nc" id="L23">            Long authorId = resultSet.getLong(&quot;CODIGO_AUTOR&quot;);</span>
+<span class="nc" id="L24">            String authorName = resultSet.getString(&quot;NOME_AUTOR&quot;);</span>
+<span class="nc" id="L25">            authorEntity.setId(authorId);</span>
+<span class="nc" id="L26">            authorEntity.setName(authorName);</span>
+<span class="nc" id="L27">            return authorEntity;</span>
+<span class="nc" id="L28">        }catch (SQLException e){</span>
+<span class="nc" id="L29">            e.printStackTrace();</span>
+<span class="nc" id="L30">            throw new RuntimeException(&quot;Erro ao carregar informacoes de autor&quot;,e);</span>
         }
     }
 
     @Override
-    public Optional&lt;AuthorEntity&gt; findById(Long id) {
-        try {
-<span class="fc" id="L39">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM AUTOR WHERE CODIGO_AUTOR = ?&quot;);</span>
-<span class="fc" id="L40">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L41">            ResultSet resultSet = preparedStatement.executeQuery();</span>
-
-<span class="fc" id="L43">            AuthorEntity authorEntity = new AuthorEntity();</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">            if(resultSet.next()){</span>
-<span class="fc" id="L45">                Long authorId = resultSet.getLong(&quot;CODIGO_AUTOR&quot;);</span>
-<span class="fc" id="L46">                String authorName = resultSet.getString(&quot;NOME_AUTOR&quot;);</span>
-<span class="fc" id="L47">                authorEntity.setId(authorId);</span>
-<span class="fc" id="L48">                authorEntity.setName(authorName);</span>
-<span class="fc" id="L49">                return Optional.ofNullable(authorEntity);</span>
-            }
-<span class="nc" id="L51">            return Optional.empty();</span>
-<span class="nc" id="L52">        } catch (SQLException e) {</span>
-<span class="nc" id="L53">            e.printStackTrace();</span>
-<span class="nc" id="L54">            throw new RuntimeException(&quot;Erro ao consultar autor&quot;,e);</span>
-        }
+    protected Map&lt;String, Object&gt; getColumnMap(AuthorEntity authorEntity) {
+<span class="nc" id="L36">        Map&lt;String, Object&gt; columMap = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L37">        columMap.put(&quot;NOME_AUTOR&quot;, authorEntity.getName());</span>
+<span class="nc" id="L38">        return columMap;</span>
     }
 
-    @Override
-    public List&lt;AuthorEntity&gt; findAll() {
-        try {
-<span class="fc" id="L61">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM AUTOR&quot;);</span>
-<span class="fc" id="L62">            ResultSet resultSet = preparedStatement.executeQuery();</span>
 
-<span class="fc" id="L64">            List&lt;AuthorEntity&gt; authors = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">            while(resultSet.next()){</span>
-<span class="fc" id="L66">                AuthorEntity authorEntity = new AuthorEntity();</span>
-<span class="fc" id="L67">                Long authorId = resultSet.getLong(&quot;CODIGO_AUTOR&quot;);</span>
-<span class="fc" id="L68">                String authorName = resultSet.getString(&quot;NOME_AUTOR&quot;);</span>
-<span class="fc" id="L69">                authorEntity.setId(authorId);</span>
-<span class="fc" id="L70">                authorEntity.setName(authorName);</span>
-<span class="fc" id="L71">                authors.add(authorEntity);</span>
-<span class="fc" id="L72">            }</span>
-<span class="fc" id="L73">            return authors;</span>
-<span class="nc" id="L74">        } catch (SQLException e) {</span>
-<span class="nc" id="L75">            e.printStackTrace();</span>
-<span class="nc" id="L76">            throw new RuntimeException(&quot;Erro ao consultar autores&quot;,e);</span>
-        }
-    }
 
-    @Override
-    public void remove(Long id) {
-        try {
-<span class="fc" id="L83">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;DELETE FROM AUTOR WHERE CODIGO_AUTOR = ?&quot;);</span>
-<span class="fc" id="L84">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L85">            preparedStatement.execute();</span>
-<span class="nc" id="L86">        } catch (SQLException e) {</span>
-<span class="nc" id="L87">            e.printStackTrace();</span>
-<span class="nc" id="L88">            throw new RuntimeException(&quot;Erro ao remover autor&quot;,e);</span>
-<span class="fc" id="L89">        }</span>
-<span class="fc" id="L90">    }</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

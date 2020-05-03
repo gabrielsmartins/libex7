@@ -7,116 +7,83 @@ import br.edu.utfpr.libex7.adapters.persistence.entity.users.UserEntity;
 import br.edu.utfpr.libex7.adapters.persistence.repository.GenericRepository;
 import br.edu.utfpr.libex7.adapters.persistence.repository.phones.PhoneRepository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 public abstract class UserRepository&lt;T extends UserEntity&gt; extends GenericRepository&lt;T, Long&gt; {
 
     private final PhoneRepository phoneRepository;
 
     public UserRepository(Connection connection) {
-<span class="fc" id="L21">        super(connection);</span>
-<span class="fc" id="L22">        this.phoneRepository = new PhoneRepository(connection);</span>
-<span class="fc" id="L23">    }</span>
+<span class="fc" id="L24">        super(connection);</span>
+<span class="fc" id="L25">        this.phoneRepository = new PhoneRepository(connection);</span>
+<span class="fc" id="L26">    }</span>
 
-    @Override
-    public T save(T user) {
-        try {
-<span class="fc" id="L28">            var preparedStatement = connection.prepareStatement(&quot;INSERT INTO USUARIO (NOME_USUARIO, DATA_NASCIMENTO_USUARIO) values (?, ?)&quot;, Statement.RETURN_GENERATED_KEYS);</span>
-<span class="fc" id="L29">            preparedStatement.setString(1,user.getName());</span>
-<span class="fc" id="L30">            preparedStatement.setDate(2, Date.valueOf(user.getDob()));</span>
-<span class="fc" id="L31">            preparedStatement.execute();</span>
-<span class="fc" id="L32">            var generatedKeys = preparedStatement.getGeneratedKeys();</span>
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">            if (generatedKeys.next()) {</span>
-<span class="fc" id="L34">                Long id = generatedKeys.getLong(1);</span>
-<span class="fc" id="L35">                user.setId(id);</span>
-            }
-<span class="fc" id="L37">            List&lt;PhoneEntity&gt; phones = user.getPhones();</span>
-<span class="fc" id="L38">            phones.forEach(ph -&gt; phoneRepository.save(ph));</span>
-<span class="fc" id="L39">            return user;</span>
-<span class="nc" id="L40">        } catch (SQLException e) {</span>
-<span class="nc" id="L41">            e.printStackTrace();</span>
-<span class="nc" id="L42">            throw new RuntimeException(&quot;Erro ao inserir usuario&quot;,e);</span>
-        }
-    }
-
-    @Override
-    public Optional&lt;T&gt; findById(Long id) {
-        try {
-<span class="fc" id="L49">            var preparedStatement = connection.prepareStatement(&quot;SELECT * FROM USUARIO WHERE CODIGO_USUARIO = ?&quot;);</span>
-<span class="fc" id="L50">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L51">            var resultSet = preparedStatement.executeQuery();</span>
-
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">            if(resultSet.next()){</span>
-<span class="fc" id="L54">                T user = createUser(resultSet);</span>
-<span class="fc" id="L55">                List&lt;PhoneEntity&gt; phoneEntities = phoneRepository.findByUserId(user.getId());</span>
-<span class="fc" id="L56">                phoneEntities.forEach(ph -&gt; user.addPhone(ph));</span>
-<span class="fc" id="L57">                return Optional.ofNullable(user);</span>
-            }
-<span class="nc" id="L59">            return Optional.empty();</span>
-<span class="nc" id="L60">        } catch (SQLException e) {</span>
-<span class="nc" id="L61">            e.printStackTrace();</span>
-<span class="nc" id="L62">            throw new RuntimeException(&quot;Erro ao consultar usuario&quot;,e);</span>
-        }
-    }
 
     @Override
     public List&lt;T&gt; findAll() {
         try {
-<span class="fc" id="L69">            var preparedStatement = connection.prepareStatement(&quot;SELECT * FROM USUARIO U &quot; +</span>
+<span class="nc" id="L32">            var preparedStatement = connection.prepareStatement(&quot;SELECT * FROM USUARIO U &quot; +</span>
                                                                    &quot;LEFT JOIN SERVIDOR S &quot; +
                                                                              &quot;ON U.CODIGO_USUARIO = S.CODIGO_USUARIO &quot; +
                                                                    &quot;LEFT JOIN ALUNO A &quot; +
                                                                              &quot;ON U.CODIGO_USUARIO = A.CODIGO_USUARIO&quot;);
-<span class="fc" id="L74">            var resultSet = preparedStatement.executeQuery();</span>
+<span class="nc" id="L37">            var resultSet = preparedStatement.executeQuery();</span>
 
-<span class="fc" id="L76">            List&lt;T&gt; users = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">            while(resultSet.next()){</span>
-<span class="fc" id="L78">                T user = createUser(resultSet);</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">                if(user instanceof EmployeeEntity){</span>
-<span class="fc" id="L80">                    Long employeeNumber = resultSet.getLong(&quot;MATRICULA_SERVIDOR&quot;);</span>
-<span class="fc" id="L81">                    ((EmployeeEntity) user).setEmployeeNumber(employeeNumber);</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">                }else if(user instanceof StudentEntity){</span>
-<span class="fc" id="L83">                    Long studentNumber = resultSet.getLong(&quot;REGISTRO_ALUNO&quot;);</span>
-<span class="fc" id="L84">                    ((StudentEntity) user).setStudentNumber(studentNumber);</span>
+<span class="nc" id="L39">            List&lt;T&gt; users = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            while(resultSet.next()){</span>
+<span class="nc" id="L41">                T user = parse(resultSet);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">                if(user instanceof EmployeeEntity){</span>
+<span class="nc" id="L43">                    Long employeeNumber = resultSet.getLong(&quot;MATRICULA_SERVIDOR&quot;);</span>
+<span class="nc" id="L44">                    ((EmployeeEntity) user).setEmployeeNumber(employeeNumber);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                }else if(user instanceof StudentEntity){</span>
+<span class="nc" id="L46">                    Long studentNumber = resultSet.getLong(&quot;REGISTRO_ALUNO&quot;);</span>
+<span class="nc" id="L47">                    ((StudentEntity) user).setStudentNumber(studentNumber);</span>
                 }
-<span class="fc" id="L86">                users.add(user);</span>
-<span class="fc" id="L87">            }</span>
-<span class="fc" id="L88">            return users;</span>
-<span class="nc" id="L89">        } catch (SQLException e) {</span>
-<span class="nc" id="L90">            e.printStackTrace();</span>
-<span class="nc" id="L91">            throw new RuntimeException(&quot;Erro ao consultar usuarios&quot;,e);</span>
+<span class="nc" id="L49">                users.add(user);</span>
+<span class="nc" id="L50">            }</span>
+<span class="nc" id="L51">            return users;</span>
+<span class="nc" id="L52">        } catch (SQLException e) {</span>
+<span class="nc" id="L53">            e.printStackTrace();</span>
+<span class="nc" id="L54">            throw new RuntimeException(&quot;Erro ao consultar usuarios&quot;,e);</span>
         }
     }
 
-    private T createUser(ResultSet resultSet) throws SQLException {
-<span class="fc" id="L96">        T user = this.newInstance();</span>
-<span class="fc" id="L97">        Long userId = resultSet.getLong(&quot;CODIGO_USUARIO&quot;);</span>
-<span class="fc" id="L98">        String userName = resultSet.getString(&quot;NOME_USUARIO&quot;);</span>
-<span class="fc" id="L99">        LocalDate dob = resultSet.getDate(&quot;DATA_NASCIMENTO_USUARIO&quot;).toLocalDate();</span>
-<span class="fc" id="L100">        user.setId(userId);</span>
-<span class="fc" id="L101">        user.setName(userName);</span>
-<span class="fc" id="L102">        user.setDob(dob);</span>
-<span class="fc" id="L103">        List&lt;PhoneEntity&gt; phoneEntities = phoneRepository.findByUserId(user.getId());</span>
-<span class="fc" id="L104">        phoneEntities.forEach(ph -&gt; user.addPhone(ph));</span>
-<span class="fc" id="L105">        return user;</span>
+    @Override
+    protected Map&lt;String, Object&gt; getColumnMap(UserEntity userEntity) {
+<span class="nc" id="L60">        Map&lt;String, Object&gt; columMap = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L61">        columMap.put(&quot;NOME_USUARIO&quot;, userEntity.getName());</span>
+<span class="nc" id="L62">        columMap.put(&quot;DATA_NASCIMENTO_USUARIO&quot;, userEntity.getDob());</span>
+<span class="nc" id="L63">        return columMap;</span>
     }
 
     @Override
-    public void remove(Long id) {
-        try {
-<span class="fc" id="L111">            var preparedStatement = connection.prepareStatement(&quot;DELETE FROM ALUNO WHERE CODIGO_USUARIO = ?&quot;);</span>
-<span class="fc" id="L112">            preparedStatement.setLong(1, id);</span>
-<span class="fc" id="L113">            preparedStatement.execute();</span>
-<span class="nc" id="L114">        } catch (SQLException e) {</span>
-<span class="nc" id="L115">            e.printStackTrace();</span>
-<span class="nc" id="L116">            throw new RuntimeException(&quot;Erro ao remove usuario&quot;,e);</span>
-<span class="fc" id="L117">        }</span>
-<span class="fc" id="L118">    }</span>
+    protected T parse(ResultSet resultSet) {
+        try{
+<span class="nc" id="L69">            T user = this.newInstance();</span>
+<span class="nc" id="L70">            Long userId = resultSet.getLong(&quot;CODIGO_USUARIO&quot;);</span>
+<span class="nc" id="L71">            String userName = resultSet.getString(&quot;NOME_USUARIO&quot;);</span>
+<span class="nc" id="L72">            LocalDate dob = resultSet.getDate(&quot;DATA_NASCIMENTO_USUARIO&quot;).toLocalDate();</span>
+<span class="nc" id="L73">            user.setId(userId);</span>
+<span class="nc" id="L74">            user.setName(userName);</span>
+<span class="nc" id="L75">            user.setDob(dob);</span>
+<span class="nc" id="L76">            List&lt;PhoneEntity&gt; phoneEntities = phoneRepository.findByUserId(user.getId());</span>
+<span class="nc" id="L77">            phoneEntities.forEach(ph -&gt; user.addPhone(ph));</span>
+<span class="nc" id="L78">            return user;</span>
+<span class="nc" id="L79">        }catch (SQLException e){</span>
+<span class="nc" id="L80">            e.printStackTrace();</span>
+<span class="nc" id="L81">            throw new RuntimeException(&quot;Erro ao carregar informacoes de usuario&quot;,e);</span>
+        }
+    }
 
     protected abstract T newInstance();
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

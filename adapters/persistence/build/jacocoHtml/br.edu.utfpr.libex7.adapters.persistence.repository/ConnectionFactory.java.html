@@ -15,8 +15,8 @@ import java.sql.SQLException;
 
     public static Connection getInstance(){
         try {
-<span class="fc bfc" id="L18" title="All 2 branches covered.">            if(connection != null)</span>
-<span class="fc" id="L19">                return connection;</span>
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">            if(connection != null)</span>
+<span class="nc" id="L19">                return connection;</span>
 <span class="fc" id="L20">            connection = DriverManager.getConnection(JDBC_URL, USER, PWD);</span>
 <span class="fc" id="L21">            return connection;</span>
 <span class="nc" id="L22">        } catch (SQLException e) {</span>

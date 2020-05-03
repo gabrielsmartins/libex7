@@ -2,8 +2,11 @@ package br.edu.utfpr.libex7.adapters.persistence.repository.users;
 
 import br.edu.utfpr.libex7.adapters.persistence.entity.users.EmployeeEntity;
 
-import java.sql.*;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class EmployeeRepository extends UserRepository<EmployeeEntity> {
 
@@ -12,55 +15,29 @@ public class EmployeeRepository extends UserRepository<EmployeeEntity> {
     }
 
     @Override
-    public EmployeeEntity save(EmployeeEntity user) {
-        try {
-            super.save(user);
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO SERVIDOR (CODIGO_USUARIO, MATRICULA_SERVIDOR) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setLong(1,user.getId());
-            preparedStatement.setLong(2,user.getEmployeeNumber());
-            preparedStatement.execute();
+    public EmployeeEntity save(EmployeeEntity entity) {
+        return super.save(entity);
+    }
+
+    @Override
+    protected EmployeeEntity parse(ResultSet resultSet) {
+        try{
+            EmployeeEntity user = super.parse(resultSet);
+            Long employeeNumber = resultSet.getLong("MATRICULA_SERVIDOR");
+            user.setEmployeeNumber(employeeNumber);
             return user;
-        } catch (SQLException e) {
+        }catch (SQLException e){
             e.printStackTrace();
-            throw new RuntimeException("Erro ao inserir usuario",e);
+            throw new RuntimeException("Erro ao carregar informacoes de funcionario",e);
         }
     }
 
     @Override
-    public Optional<EmployeeEntity> findById(Long id) {
-        try {
-            Optional<EmployeeEntity> optionalUser = super.findById(id);
-            if(!optionalUser.isPresent()){
-                return Optional.empty();
-            }
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM SERVIDOR WHERE CODIGO_USUARIO = ?");
-            preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            EmployeeEntity user = optionalUser.get();
-            if(resultSet.next()){
-                Long employeeNumber = resultSet.getLong("MATRICULA_SERVIDOR");
-                user.setEmployeeNumber(employeeNumber);
-                return Optional.ofNullable(user);
-            }
-            return Optional.empty();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao consultar servidor",e);
-        }
-    }
-
-    @Override
-    public void remove(Long id) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM SERVIDOR WHERE CODIGO_USUARIO = ?");
-            preparedStatement.setLong(1, id);
-            preparedStatement.execute();
-            super.remove(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao remove servidor",e);
-        }
+    protected Map<String, Object> getColumnMap(EmployeeEntity employeeEntity) {
+        Map<String, Object> columMap = new LinkedHashMap<>();
+        columMap.put("CODIGO_USUARIO", employeeEntity.getId());
+        columMap.put("MATRICULA_SERVIDOR", employeeEntity.getEmployeeNumber());
+        return columMap;
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="br.edu.utfpr.libex7.application.service.authors.SearchAuthorServiceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-05-02T18:58:53" hostname="home-pc" time="0.08">
+<testsuite name="br.edu.utfpr.libex7.application.service.authors.SearchAuthorServiceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-05-02T22:08:21" hostname="home-pc" time="0.051">
   <properties/>
-  <testcase name="givenAuthorIdWhenSearchThenReturnAuthor()" classname="br.edu.utfpr.libex7.application.service.authors.SearchAuthorServiceTest" time="0.075"/>
+  <testcase name="givenAuthorIdWhenSearchThenReturnAuthor()" classname="br.edu.utfpr.libex7.application.service.authors.SearchAuthorServiceTest" time="0.046"/>
   <testcase name="givenFindAllMethodWhenIsCalledThenReturnAuthorList()" classname="br.edu.utfpr.libex7.application.service.authors.SearchAuthorServiceTest" time="0.003"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

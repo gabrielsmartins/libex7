@@ -9,31 +9,31 @@ public class EmployeePersistenceMapper extends UserPersistenceMapper&lt;Employee
 
 
     public EmployeePersistenceMapper(PhonePersistenceMapper phonePersistenceMapper) {
-<span class="fc" id="L12">        super(phonePersistenceMapper);</span>
-<span class="fc" id="L13">    }</span>
+<span class="nc" id="L12">        super(phonePersistenceMapper);</span>
+<span class="nc" id="L13">    }</span>
 
     @Override
     public EmployeeEntity mapToEntity(Employee user) {
-<span class="fc" id="L17">        EmployeeEntity employeeEntity = super.mapToEntity(user);</span>
-<span class="fc" id="L18">        employeeEntity.setEmployeeNumber(user.getEmployeeNumber());</span>
-<span class="fc" id="L19">        return employeeEntity;</span>
+<span class="nc" id="L17">        EmployeeEntity employeeEntity = super.mapToEntity(user);</span>
+<span class="nc" id="L18">        employeeEntity.setEmployeeNumber(user.getEmployeeNumber());</span>
+<span class="nc" id="L19">        return employeeEntity;</span>
     }
 
     @Override
     public Employee mapToDomain(EmployeeEntity userEntity) {
-<span class="fc" id="L24">        Employee employee = super.mapToDomain(userEntity);</span>
-<span class="fc" id="L25">        employee.setEmployeeNumber(userEntity.getEmployeeNumber());</span>
-<span class="fc" id="L26">        return employee;</span>
+<span class="nc" id="L24">        Employee employee = super.mapToDomain(userEntity);</span>
+<span class="nc" id="L25">        employee.setEmployeeNumber(userEntity.getEmployeeNumber());</span>
+<span class="nc" id="L26">        return employee;</span>
     }
 
     @Override
     protected Employee newInstanceDomain() {
-<span class="fc" id="L31">        return new Employee();</span>
+<span class="nc" id="L31">        return new Employee();</span>
     }
 
     @Override
     protected EmployeeEntity newInstanceEntity() {
-<span class="fc" id="L36">        return new EmployeeEntity();</span>
+<span class="nc" id="L36">        return new EmployeeEntity();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

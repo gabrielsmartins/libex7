@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="br.edu.utfpr.libex7.application.service.phones.SearchPhoneServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-05-02T18:58:53" hostname="home-pc" time="0.037">
+<testsuite name="br.edu.utfpr.libex7.application.service.phones.SearchPhoneServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-05-02T22:08:21" hostname="home-pc" time="0.073">
   <properties/>
-  <testcase name="givenUserIdWhenSearchThenReturnPhone()" classname="br.edu.utfpr.libex7.application.service.phones.SearchPhoneServiceTest" time="0.037"/>
+  <testcase name="givenUserIdWhenSearchThenReturnPhone()" classname="br.edu.utfpr.libex7.application.service.phones.SearchPhoneServiceTest" time="0.073"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

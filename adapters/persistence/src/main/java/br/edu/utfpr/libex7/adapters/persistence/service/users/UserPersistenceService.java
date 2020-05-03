@@ -13,7 +13,7 @@ public class UserPersistenceService implements IUserPersistenceService {
     private final UserRepository userRepository;
     @Override
     public UserEntity save(UserEntity user) {
-        return userRepository.save(user);
+        return (UserEntity) userRepository.save(user);
     }
 
     @Override
